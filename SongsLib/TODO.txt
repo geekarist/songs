@@ -1,0 +1,2 @@
+Fix bad request error when using launcher
+Create configuration file for network, credentials and echo nest parameters
