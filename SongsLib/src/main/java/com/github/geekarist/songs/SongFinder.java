@@ -16,13 +16,11 @@ import org.json.JSONObject;
 
 public class SongFinder {
 
-	private static final String PROXY_PASS = "xxx";
-	private static final String PROXY_USER = "xxx";
-	private static final String URL = "http://developer.echonest.com/api/v4/song/search";
-	private static final String API_KEY = "N6E4NIOVYMTHNDM8J";
-	
-	private static final int PROXY_PORT = 8080;
-	private static final String PROXY_URL = "ptx.proxy.corp.sopra";
+	private SongFinderConfiguration configuration;
+
+	public SongFinder(SongFinderConfiguration conf) {
+		this.configuration = conf;
+	}
 
 	private String style;
 	private int bpm;
@@ -68,8 +66,12 @@ public class SongFinder {
 			DefaultHttpClient httpClient = createHttpClient();
 			HttpGet httpGet = new HttpGet(request);
 			BasicResponseHandler responseHander = new BasicResponseHandler();
-			HttpHost proxy = new HttpHost(PROXY_URL, PROXY_PORT);
-			return httpClient.execute(proxy, httpGet, responseHander);
+			if (configuration.isProxyEnabled()) {
+				HttpHost proxy = new HttpHost(configuration.getProxyUrl(), configuration.getProxyPort());
+				return httpClient.execute(proxy, httpGet, responseHander);
+			} else {
+				return httpClient.execute(httpGet, responseHander);
+			}
 		} catch (IOException e) {
 			throw new SongsLibException("Error while reading echo nest response", e);
 		}
@@ -77,15 +79,17 @@ public class SongFinder {
 
 	protected DefaultHttpClient createHttpClient() {
 		DefaultHttpClient httpClient = new DefaultHttpClient();
-		httpClient.getCredentialsProvider().setCredentials(
-                new AuthScope(PROXY_URL, PROXY_PORT),
-                new UsernamePasswordCredentials(PROXY_USER, PROXY_PASS));
+		if (configuration.isProxyEnabled()) {
+			httpClient.getCredentialsProvider().setCredentials(
+					new AuthScope(configuration.getProxyUrl(), configuration.getProxyPort()),
+					new UsernamePasswordCredentials(configuration.getProxyUser(), configuration.getProxyPass()));
+		}
 		return httpClient;
 	}
 
 	private String createRequest() {
 		return String.format(
 				"%s?api_key=%s&format=json&results=%d&style=%s&sort=song_hotttnesss-desc&min_tempo=%d&max_tempo=%d", //
-				URL, API_KEY, nbResults, style, bpm - 1, bpm + 1);
+				configuration.getEchoNestUrl(), configuration.getEchoNestApiKey(), nbResults, style, bpm - 1, bpm + 1);
 	}
 }

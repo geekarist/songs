@@ -8,7 +8,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -24,6 +23,8 @@ public class SongFinderTest {
 		// Setup
 		SongFinder finder = EasyMock.createMockBuilder(SongFinder.class) //
 				.addMockedMethod("createHttpClient") //
+				.withConstructor(SongFinderConfiguration.class) //
+				.withArgs(new SongFinderConfiguration()) //
 				.createMock();
 
 		DefaultHttpClient httpClientMock = EasyMock.createMock(DefaultHttpClient.class);
@@ -50,8 +51,7 @@ public class SongFinderTest {
 	}
 
 	private void expectExecute(HttpClient httpClientMock) throws IOException, ClientProtocolException {
-		httpClientMock.execute(EasyMock.isA(HttpHost.class), EasyMock.isA(HttpGet.class),
-				EasyMock.isA(BasicResponseHandler.class));
+		httpClientMock.execute(EasyMock.isA(HttpGet.class), EasyMock.isA(BasicResponseHandler.class));
 		EasyMock.expectLastCall().andReturn(
 				FileUtils.readFileToString(new File("src/test/resources/echoNestTestResponse.txt")));
 	}

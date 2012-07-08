@@ -53,6 +53,13 @@
 					<downloadSources>true</downloadSources>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.github.geekarist.songs.SongFinderLauncher</mainClass>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

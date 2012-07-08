@@ -14,12 +14,12 @@ public class SongFinderLauncher {
 		System.out.print("Enter number of results: ");
 		int nbResults = scanner.nextInt();
 		
-		SongFinder finder = new SongFinder();
+		SongFinder finder = new SongFinder(new SongFinderConfiguration("src/main/resources/songfinder.properties"));
 		finder.chooseBpm(bpm);
 		finder.chooseNbResults(nbResults);
 		finder.chooseStyle(style);
 		List<Song> findSongs = finder.findSongs();
-		System.out.printf("Found %d songs", findSongs.size());
+		System.out.printf("Found %d songs\n", findSongs.size());
 		for (Song s : findSongs) {
 			System.out.println(s);
 		}
