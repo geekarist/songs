@@ -77,7 +77,7 @@ public class Finder {
 
 	protected HttpClientCreator buildHttpClientCreator() {
 		return new HttpClientCreator(configuration.isProxyEnabled(), configuration.getProxyUser(),
-				configuration.getProxyPass(), configuration.getProxyUrl(), configuration.getProxyDomain(),
+				configuration.getProxyPass(), configuration.getProxyDomain(), configuration.getProxyUrl(),
 				configuration.getProxyPort());
 	}
 

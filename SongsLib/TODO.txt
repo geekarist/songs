@@ -1,5 +1,4 @@
 TODO:
-Refactor class names
 Implement playlist creator for youtube
 Use spring dependancy to ease unit testing
 Handle non ntlm proxy
@@ -9,3 +8,4 @@ DONE:
 Create configuration file for network, credentials and echo nest parameters
 Fix bad request error when using launcher using internal ntlm proxy
 Improve test coverage
+Refactor class names
