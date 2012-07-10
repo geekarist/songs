@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
@@ -31,6 +32,7 @@ public class SongFinderTest {
 
 		expectCreateHttpClient(finder, httpClientMock);
 		expectExecute(httpClientMock);
+		expectGetConnectionManager(httpClientMock);
 
 		EasyMock.replay(finder, httpClientMock);
 
@@ -45,7 +47,12 @@ public class SongFinderTest {
 		Assert.assertEquals(createExpectedResult(), result);
 	}
 
-	private void expectCreateHttpClient(SongFinder finder, DefaultHttpClient httpClientMock) {
+	private void expectGetConnectionManager(DefaultHttpClient httpClientMock) {
+		httpClientMock.getConnectionManager();
+		EasyMock.expectLastCall().andReturn(new BasicClientConnectionManager());
+	}
+
+	private void expectCreateHttpClient(SongFinder finder, DefaultHttpClient httpClientMock) throws SongsLibException {
 		finder.createHttpClient();
 		EasyMock.expectLastCall().andReturn(httpClientMock);
 	}

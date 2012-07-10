@@ -1,20 +1,26 @@
 package com.github.geekarist.songs;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class SongFinder {
+
+	private static final Logger LOGGER = Logger.getLogger(SongFinder.class);
 
 	private SongFinderConfiguration configuration;
 
@@ -62,34 +68,57 @@ public class SongFinder {
 	}
 
 	private String callService(String request) throws SongsLibException {
+		DefaultHttpClient httpClient = createHttpClient();
 		try {
-			DefaultHttpClient httpClient = createHttpClient();
 			HttpGet httpGet = new HttpGet(request);
 			BasicResponseHandler responseHander = new BasicResponseHandler();
-			if (configuration.isProxyEnabled()) {
-				HttpHost proxy = new HttpHost(configuration.getProxyUrl(), configuration.getProxyPort());
-				return httpClient.execute(proxy, httpGet, responseHander);
-			} else {
-				return httpClient.execute(httpGet, responseHander);
-			}
+			return httpClient.execute(httpGet, responseHander);
 		} catch (IOException e) {
 			throw new SongsLibException("Error while reading echo nest response", e);
+		} finally {
+			httpClient.getConnectionManager().shutdown();
 		}
 	}
 
-	protected DefaultHttpClient createHttpClient() {
+	protected DefaultHttpClient createHttpClient() throws SongsLibException {
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		if (configuration.isProxyEnabled()) {
-			httpClient.getCredentialsProvider().setCredentials(
-					new AuthScope(configuration.getProxyUrl(), configuration.getProxyPort()),
-					new UsernamePasswordCredentials(configuration.getProxyUser(), configuration.getProxyPass()));
+			configureClientForProxy(httpClient);
 		}
 		return httpClient;
 	}
 
+	private void configureClientForProxy(DefaultHttpClient httpClient) throws SongsLibException {
+		String proxyUser = configuration.getProxyUser();
+		String proxyPass = configuration.getProxyPass();
+		String proxyUrl = configuration.getProxyUrl();
+		int proxyPort = configuration.getProxyPort();
+		String localHostName = getLocalHostName();
+
+		HttpHost proxyHost = new HttpHost(proxyUrl, proxyPort);
+		httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
+
+		httpClient.getCredentialsProvider().setCredentials( //
+				new AuthScope(proxyUrl, proxyPort), //
+				new NTCredentials(proxyUser, proxyPass, localHostName, "emeaad"));
+		
+	}
+
+	private String getLocalHostName() throws SongsLibException {
+		String proxyWorkstation;
+		try {
+			proxyWorkstation = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			throw new SongsLibException("Error while retrieving local hostname for proxy authentification", e);
+		}
+		return proxyWorkstation;
+	}
+
 	private String createRequest() {
-		return String.format(
+		String req = String.format(
 				"%s?api_key=%s&format=json&results=%d&style=%s&sort=song_hotttnesss-desc&min_tempo=%d&max_tempo=%d", //
 				configuration.getEchoNestUrl(), configuration.getEchoNestApiKey(), nbResults, style, bpm - 1, bpm + 1);
+		LOGGER.debug(req);
+		return req;
 	}
 }
