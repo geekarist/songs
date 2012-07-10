@@ -1,16 +1,10 @@
 package com.github.geekarist.songs;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
@@ -68,7 +62,8 @@ public class SongFinder {
 	}
 
 	private String callService(String request) throws SongsLibException {
-		DefaultHttpClient httpClient = createHttpClient();
+		HttpClientCreator clientCreator = buildHttpClientCreator();
+		DefaultHttpClient httpClient = clientCreator.createHttpClient();
 		try {
 			HttpGet httpGet = new HttpGet(request);
 			BasicResponseHandler responseHander = new BasicResponseHandler();
@@ -80,38 +75,10 @@ public class SongFinder {
 		}
 	}
 
-	protected DefaultHttpClient createHttpClient() throws SongsLibException {
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		if (configuration.isProxyEnabled()) {
-			configureClientForProxy(httpClient);
-		}
-		return httpClient;
-	}
-
-	private void configureClientForProxy(DefaultHttpClient httpClient) throws SongsLibException {
-		String proxyUser = configuration.getProxyUser();
-		String proxyPass = configuration.getProxyPass();
-		String proxyUrl = configuration.getProxyUrl();
-		int proxyPort = configuration.getProxyPort();
-		String localHostName = getLocalHostName();
-
-		HttpHost proxyHost = new HttpHost(proxyUrl, proxyPort);
-		httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
-
-		httpClient.getCredentialsProvider().setCredentials( //
-				new AuthScope(proxyUrl, proxyPort), //
-				new NTCredentials(proxyUser, proxyPass, localHostName, "emeaad"));
-		
-	}
-
-	private String getLocalHostName() throws SongsLibException {
-		String proxyWorkstation;
-		try {
-			proxyWorkstation = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			throw new SongsLibException("Error while retrieving local hostname for proxy authentification", e);
-		}
-		return proxyWorkstation;
+	protected HttpClientCreator buildHttpClientCreator() {
+		return new HttpClientCreator(configuration.isProxyEnabled(), configuration.getProxyUser(),
+				configuration.getProxyPass(), configuration.getProxyUrl(), configuration.getProxyDomain(),
+				configuration.getProxyPort());
 	}
 
 	private String createRequest() {

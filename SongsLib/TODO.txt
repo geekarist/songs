@@ -1,5 +1,5 @@
 TODO:
-Improve test coverage
+Use spring dependancy to ease unit testing
 Implement playlist creator for youtube
 Handle non ntlm proxy
 Improve log4j pattern
@@ -7,3 +7,4 @@ Improve log4j pattern
 DONE:
 Create configuration file for network, credentials and echo nest parameters
 Fix bad request error when using launcher using internal ntlm proxy
+Improve test coverage

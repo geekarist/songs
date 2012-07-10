@@ -15,6 +15,7 @@ public class SongFinderConfiguration {
 
 	private String echoNestUrl = "";
 	private String echoNestApiKey = "";
+	private String proxyDomain = "";
 
 	public SongFinderConfiguration(String path) throws SongsLibException {
 		Properties properties = new Properties();
@@ -30,6 +31,7 @@ public class SongFinderConfiguration {
 		proxyEnabled = Boolean.parseBoolean(properties.getProperty("proxy.enabled"));
 		proxyPass = properties.getProperty("proxy.pass");
 		proxyUser = properties.getProperty("proxy.user");
+		proxyDomain = properties.getProperty("proxy.domain");
 		proxyPort = Integer.parseInt(properties.getProperty("proxy.port"));
 		proxyUrl = properties.getProperty("proxy.url");
 		echoNestUrl = properties.getProperty("echonest.url");
@@ -65,6 +67,10 @@ public class SongFinderConfiguration {
 
 	public boolean isProxyEnabled() {
 		return proxyEnabled;
+	}
+
+	public String getProxyDomain() {
+		return proxyDomain;
 	}
 
 }

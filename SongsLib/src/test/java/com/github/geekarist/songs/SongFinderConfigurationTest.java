@@ -14,6 +14,7 @@ public class SongFinderConfigurationTest {
 		Assert.assertEquals(true, configuration.isProxyEnabled());
 		Assert.assertEquals("username", configuration.getProxyUser());
 		Assert.assertEquals("password", configuration.getProxyPass());
+		Assert.assertEquals("domain", configuration.getProxyDomain());
 		Assert.assertEquals(9099, configuration.getProxyPort());
 		Assert.assertEquals("proxy.host.com", configuration.getProxyUrl());
 		Assert.assertEquals("http://url.to.api/xx/yy/zz", configuration.getEchoNestUrl());

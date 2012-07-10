@@ -22,19 +22,25 @@ public class SongFinderTest {
 	@Test
 	public void testFind() throws SongsLibException, ClientProtocolException, IOException {
 		// Setup
+		SongFinderConfiguration songFinderConfiguration = new SongFinderConfiguration();
 		SongFinder finder = EasyMock.createMockBuilder(SongFinder.class) //
-				.addMockedMethod("createHttpClient") //
+				.addMockedMethod("buildHttpClientCreator") //
 				.withConstructor(SongFinderConfiguration.class) //
-				.withArgs(new SongFinderConfiguration()) //
+				.withArgs(songFinderConfiguration) //
 				.createMock();
-
+		HttpClientCreator httpClientCreatorMock = EasyMock.createMockBuilder(HttpClientCreator.class) //
+				.addMockedMethod("createHttpClient") //
+				.withConstructor(boolean.class, String.class, String.class, String.class, String.class, int.class) //
+				.withArgs(false, null, null, null, null, 0) //
+				.createMock();
 		DefaultHttpClient httpClientMock = EasyMock.createMock(DefaultHttpClient.class);
 
-		expectCreateHttpClient(finder, httpClientMock);
+		expectBuildHttpClientCreator(finder, httpClientCreatorMock);
+		expectCreateHttpClient(httpClientCreatorMock, httpClientMock);
 		expectExecute(httpClientMock);
 		expectGetConnectionManager(httpClientMock);
 
-		EasyMock.replay(finder, httpClientMock);
+		EasyMock.replay(finder, httpClientCreatorMock, httpClientMock);
 
 		// Test
 		finder.chooseNbResults(10);
@@ -43,8 +49,13 @@ public class SongFinderTest {
 		List<Song> result = finder.findSongs();
 
 		// Assert
-		EasyMock.verify(finder, httpClientMock);
+		EasyMock.verify(finder, httpClientCreatorMock, httpClientMock);
 		Assert.assertEquals(createExpectedResult(), result);
+	}
+
+	private void expectBuildHttpClientCreator(SongFinder finder, HttpClientCreator httpClientCreatorMock) {
+		finder.buildHttpClientCreator();
+		EasyMock.expectLastCall().andReturn(httpClientCreatorMock);
 	}
 
 	private void expectGetConnectionManager(DefaultHttpClient httpClientMock) {
@@ -52,8 +63,9 @@ public class SongFinderTest {
 		EasyMock.expectLastCall().andReturn(new BasicClientConnectionManager());
 	}
 
-	private void expectCreateHttpClient(SongFinder finder, DefaultHttpClient httpClientMock) throws SongsLibException {
-		finder.createHttpClient();
+	private void expectCreateHttpClient(HttpClientCreator creator, DefaultHttpClient httpClientMock)
+			throws SongsLibException {
+		creator.createHttpClient();
 		EasyMock.expectLastCall().andReturn(httpClientMock);
 	}
 
