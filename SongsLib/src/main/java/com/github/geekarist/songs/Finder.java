@@ -12,13 +12,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SongFinder {
+public class Finder {
 
-	private static final Logger LOGGER = Logger.getLogger(SongFinder.class);
+	private static final Logger LOGGER = Logger.getLogger(Finder.class);
 
-	private SongFinderConfiguration configuration;
+	private Configuration configuration;
 
-	public SongFinder(SongFinderConfiguration conf) {
+	public Finder(Configuration conf) {
 		this.configuration = conf;
 	}
 

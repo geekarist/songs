@@ -1,6 +1,7 @@
 TODO:
-Use spring dependancy to ease unit testing
+Refactor class names
 Implement playlist creator for youtube
+Use spring dependancy to ease unit testing
 Handle non ntlm proxy
 Improve log4j pattern
 

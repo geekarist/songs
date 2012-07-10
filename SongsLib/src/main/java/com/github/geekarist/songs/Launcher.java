@@ -3,7 +3,7 @@ package com.github.geekarist.songs;
 import java.util.List;
 import java.util.Scanner;
 
-public class SongFinderLauncher {
+public class Launcher {
 
 	public static void main(String[] args) throws SongsLibException {
 		Scanner scanner = new Scanner(System.in);
@@ -14,7 +14,7 @@ public class SongFinderLauncher {
 		System.out.print("Enter number of results: ");
 		int nbResults = scanner.nextInt();
 		
-		SongFinder finder = new SongFinder(new SongFinderConfiguration("src/main/resources/songfinder.properties"));
+		Finder finder = new Finder(new Configuration("src/main/resources/songfinder.properties"));
 		finder.chooseBpm(bpm);
 		finder.chooseNbResults(nbResults);
 		finder.chooseStyle(style);

@@ -4,11 +4,11 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-public class SongFinderConfigurationTest {
+public class ConfigurationTest {
 
 	@Test
 	public void test() throws SongsLibException {
-		SongFinderConfiguration configuration = new SongFinderConfiguration(
+		Configuration configuration = new Configuration(
 				"src/test/resources/testsongfinder.properties");
 
 		Assert.assertEquals(true, configuration.isProxyEnabled());

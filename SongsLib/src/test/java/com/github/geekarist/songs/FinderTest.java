@@ -17,15 +17,15 @@ import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
-public class SongFinderTest {
+public class FinderTest {
 
 	@Test
 	public void testFind() throws SongsLibException, ClientProtocolException, IOException {
 		// Setup
-		SongFinderConfiguration songFinderConfiguration = new SongFinderConfiguration();
-		SongFinder finder = EasyMock.createMockBuilder(SongFinder.class) //
+		Configuration songFinderConfiguration = new Configuration();
+		Finder finder = EasyMock.createMockBuilder(Finder.class) //
 				.addMockedMethod("buildHttpClientCreator") //
-				.withConstructor(SongFinderConfiguration.class) //
+				.withConstructor(Configuration.class) //
 				.withArgs(songFinderConfiguration) //
 				.createMock();
 		HttpClientCreator httpClientCreatorMock = EasyMock.createMockBuilder(HttpClientCreator.class) //
@@ -53,7 +53,7 @@ public class SongFinderTest {
 		Assert.assertEquals(createExpectedResult(), result);
 	}
 
-	private void expectBuildHttpClientCreator(SongFinder finder, HttpClientCreator httpClientCreatorMock) {
+	private void expectBuildHttpClientCreator(Finder finder, HttpClientCreator httpClientCreatorMock) {
 		finder.buildHttpClientCreator();
 		EasyMock.expectLastCall().andReturn(httpClientCreatorMock);
 	}

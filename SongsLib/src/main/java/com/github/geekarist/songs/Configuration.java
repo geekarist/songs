@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-public class SongFinderConfiguration {
+public class Configuration {
 
 	private boolean proxyEnabled = false;
 	private String proxyPass = "";
@@ -17,7 +17,7 @@ public class SongFinderConfiguration {
 	private String echoNestApiKey = "";
 	private String proxyDomain = "";
 
-	public SongFinderConfiguration(String path) throws SongsLibException {
+	public Configuration(String path) throws SongsLibException {
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileReader(path));
@@ -38,7 +38,7 @@ public class SongFinderConfiguration {
 		echoNestApiKey = properties.getProperty("echonest.api.key");
 	}
 
-	public SongFinderConfiguration() {
+	public Configuration() {
 	}
 
 	public String getProxyPass() {
