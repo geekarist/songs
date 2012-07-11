@@ -9,7 +9,7 @@ public class ConfigurationTest {
 	@Test
 	public void test() throws SongsLibException {
 		Configuration configuration = new Configuration(
-				"src/test/resources/testsongfinder.properties");
+				"src/test/resources/songfinder/testsongfinder.properties");
 
 		Assert.assertEquals(true, configuration.isProxyEnabled());
 		Assert.assertEquals("username", configuration.getProxyUser());

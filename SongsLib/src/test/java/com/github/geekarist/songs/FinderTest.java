@@ -72,7 +72,7 @@ public class FinderTest {
 	private void expectExecute(HttpClient httpClientMock) throws IOException, ClientProtocolException {
 		httpClientMock.execute(EasyMock.isA(HttpGet.class), EasyMock.isA(BasicResponseHandler.class));
 		EasyMock.expectLastCall().andReturn(
-				FileUtils.readFileToString(new File("src/test/resources/echoNestTestResponse.txt")));
+				FileUtils.readFileToString(new File("src/test/resources/songfinder/echoNestTestResponse.txt")));
 	}
 
 	private List<Song> createExpectedResult() {

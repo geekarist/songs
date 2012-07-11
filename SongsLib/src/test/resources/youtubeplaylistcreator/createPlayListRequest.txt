@@ -1,0 +1,15 @@
+POST /feeds/api/users/default/playlists?alt=jsonc HTTP/1.1
+Host: gdata.youtube.com
+Content-Type: application/json
+Authorization: AuthSub token="AUTHORIZATION_TOKEN"
+GData-Version: 2
+X-GData-Key: key=DEVELOPER_KEY
+
+{
+  "data":{
+    "title":"List Title",
+    "description":"List Description",
+    "tags":["tag1","tag2"],
+    "privacy":"private"
+  }
+}
