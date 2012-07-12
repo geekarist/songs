@@ -5,11 +5,4 @@ Authorization: AuthSub token="AUTHORIZATION_TOKEN"
 GData-Version: 2
 X-GData-Key: key=DEVELOPER_KEY
 
-{
-  "data":{
-    "title":"List Title",
-    "description":"List Description",
-    "tags":["tag1","tag2"],
-    "privacy":"private"
-  }
-}
+{ "data":{ "title":"List Title", "description":"List Description", "tags":["tag1","tag2"], "privacy":"private" } }

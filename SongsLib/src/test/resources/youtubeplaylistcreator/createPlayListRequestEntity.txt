@@ -1,8 +1,1 @@
-{
-  "data":{
-    "title":"List Title",
-    "description":"List Description",
-    "tags":["tag1","tag2"],
-    "privacy":"private"
-  }
-}
+{ "data":{ "title":"List Title", "description":"List Description", "tags":["tag1","tag2"], "privacy":"private" } }

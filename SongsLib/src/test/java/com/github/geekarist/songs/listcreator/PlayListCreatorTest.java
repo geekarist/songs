@@ -9,8 +9,9 @@ import java.util.Arrays;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -24,7 +25,6 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.http.util.EntityUtils;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.geekarist.songs.SongsLibException;
@@ -32,7 +32,6 @@ import com.github.geekarist.songs.SongsLibException;
 public class PlayListCreatorTest {
 
 	@Test
-	@Ignore
 	public void testCreate() throws ClientProtocolException, IOException, SongsLibException {
 		HttpClient httpClientMock = EasyMock.createMock(HttpClient.class);
 		ClientConnectionManager connectionManagerMock = EasyMock.createMock(ClientConnectionManager.class);
@@ -47,12 +46,12 @@ public class PlayListCreatorTest {
 		expectGetConnectionManager(httpClientMock, connectionManagerMock);
 		expectShutdown(connectionManagerMock);
 
-		EasyMock.replay(httpClientMock);
+		EasyMock.replay(httpClientMock, connectionManagerMock);
 
 		PlaylistCreator creator = new PlaylistCreator(httpClientMock);
 		creator.create("List Title", "List Description", Arrays.asList("tag1", "tag2"));
 
-		EasyMock.verify(httpClientMock);
+		EasyMock.verify(httpClientMock, connectionManagerMock);
 	}
 
 	private void expectShutdown(ClientConnectionManager connectionManagerMock) {
@@ -71,7 +70,7 @@ public class PlayListCreatorTest {
 		httpPost.addHeader("Content-Type", "application/json");
 		httpPost.addHeader("Authorization", "AuthSub token=\"AUTHORIZATION_TOKEN\"");
 		httpPost.addHeader("GData-Version", "2");
-		httpPost.addHeader("X-GData-Key", "DEVELOPER_KEY");
+		httpPost.addHeader("X-GData-Key", "AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA");
 		BasicHttpEntity entity = new BasicHttpEntity();
 		entity.setContent(new ReaderInputStream(new StringReader(requestContents)));
 		httpPost.setEntity(entity);
@@ -99,16 +98,26 @@ public class PlayListCreatorTest {
 
 		@Override
 		public boolean matches(Object argument) {
+			URI expectedUri = expectedRequest.getURI();
+			String expectedHeaders = ReflectionToStringBuilder.toString( //
+					expectedRequest.getAllHeaders(), //
+					ToStringStyle.SHORT_PREFIX_STYLE);
+
 			HttpPost actualRequest = (HttpPost) argument;
-			URI uri = expectedRequest.getURI();
-			Header[] headers = expectedRequest.getAllHeaders();
-			HttpEntity entity = expectedRequest.getEntity();
+			URI actualUri = actualRequest.getURI();
+			String actualHeaders = ReflectionToStringBuilder.toString( //
+					actualRequest.getAllHeaders(), //
+					ToStringStyle.SHORT_PREFIX_STYLE);
 
 			try {
-				return ObjectUtils.equals(uri, actualRequest.getURI()) //
-						&& ObjectUtils.equals(headers, actualRequest.getAllHeaders()) //
-						&& ObjectUtils.equals(EntityUtils.toString(entity),
-								EntityUtils.toString(actualRequest.getEntity()));
+				String expectedEntity = StringUtils.trim(EntityUtils.toString(expectedRequest.getEntity()));
+				String actualEntity = StringUtils.trim(EntityUtils.toString(actualRequest.getEntity()));
+
+				boolean urisEqual = ObjectUtils.equals(expectedUri, actualUri);
+				boolean headersEqual = ObjectUtils.equals(expectedHeaders, actualHeaders);
+				boolean entitiesEqual = ObjectUtils.equals(expectedEntity, actualEntity);
+
+				return urisEqual && headersEqual && entitiesEqual;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
