@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.github.geekarist.songs.HttpClientCreator;
+import com.github.geekarist.songs.Song;
 import com.github.geekarist.songs.SongsLibException;
 
 public class Finder {

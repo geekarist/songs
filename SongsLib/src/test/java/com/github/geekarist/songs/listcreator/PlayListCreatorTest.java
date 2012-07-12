@@ -12,12 +12,12 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
@@ -27,31 +27,42 @@ import org.easymock.IArgumentMatcher;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.github.geekarist.songs.listcreator.PlaylistCreator;
+import com.github.geekarist.songs.SongsLibException;
 
 public class PlayListCreatorTest {
 
 	@Test
 	@Ignore
-	public void testCreate() throws ClientProtocolException, IOException {
+	public void testCreate() throws ClientProtocolException, IOException, SongsLibException {
 		HttpClient httpClientMock = EasyMock.createMock(HttpClient.class);
+		ClientConnectionManager connectionManagerMock = EasyMock.createMock(ClientConnectionManager.class);
 
-		HttpHost expectedTarget = new HttpHost(
-				"https://gdata.youtube.com/feeds/api/users/default/playlists?v=2&alt=jsonc");
+		HttpHost expectedTarget = new HttpHost("gdata.youtube.com");
 		HttpPost expectedRequest = createHttpRequest(FileUtils.readFileToString(new File(
 				"src/test/resources/youtubeplaylistcreator/createPlayListRequestEntity.txt")));
 		HttpResponse response = createHttpResponse(FileUtils.readFileToString(new File(
 				"src/test/resources/youtubeplaylistcreator/createPlayListResponse.txt")));
 
 		expectExecute(httpClientMock, expectedTarget, expectedRequest, response);
+		expectGetConnectionManager(httpClientMock, connectionManagerMock);
+		expectShutdown(connectionManagerMock);
 
 		EasyMock.replay(httpClientMock);
 
-		PlaylistCreator creator = new PlaylistCreator();
-		inject(httpClientMock, creator);
+		PlaylistCreator creator = new PlaylistCreator(httpClientMock);
 		creator.create("List Title", "List Description", Arrays.asList("tag1", "tag2"));
 
 		EasyMock.verify(httpClientMock);
+	}
+
+	private void expectShutdown(ClientConnectionManager connectionManagerMock) {
+		connectionManagerMock.shutdown();
+		EasyMock.expectLastCall();
+	}
+
+	private void expectGetConnectionManager(HttpClient httpClientMock, ClientConnectionManager connectionManagerMock) {
+		httpClientMock.getConnectionManager();
+		EasyMock.expectLastCall().andReturn(connectionManagerMock);
 	}
 
 	protected HttpPost createHttpRequest(String requestContents) throws IOException {
@@ -67,17 +78,13 @@ public class PlayListCreatorTest {
 		return httpPost;
 	}
 
-	private void inject(HttpClient mock, PlaylistCreator creator) {
-		// TODO
-	}
-
 	private void expectExecute(HttpClient mock, HttpHost expectedTarget, HttpPost expectedRequest, HttpResponse response)
 			throws ClientProtocolException, IOException {
 		mock.execute(EasyMock.eq(expectedTarget), requestMatches(expectedRequest));
 		EasyMock.expectLastCall().andReturn(response);
 	}
 
-	private HttpRequest requestMatches(HttpPost expectedRequest) {
+	private HttpPost requestMatches(HttpPost expectedRequest) {
 		EasyMock.reportMatcher(new HttpPostMatcher(expectedRequest));
 		return null;
 	}

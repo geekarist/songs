@@ -3,6 +3,7 @@ package com.github.geekarist.songs.finder;
 import java.util.List;
 import java.util.Scanner;
 
+import com.github.geekarist.songs.Song;
 import com.github.geekarist.songs.SongsLibException;
 
 public class Launcher {
