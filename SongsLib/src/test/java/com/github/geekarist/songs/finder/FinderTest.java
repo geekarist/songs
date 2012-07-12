@@ -1,4 +1,4 @@
-package com.github.geekarist.songs;
+package com.github.geekarist.songs.finder;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +16,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.easymock.EasyMock;
 import org.junit.Test;
+
+import com.github.geekarist.songs.HttpClientCreator;
+import com.github.geekarist.songs.SongsLibException;
+import com.github.geekarist.songs.finder.Configuration;
+import com.github.geekarist.songs.finder.Finder;
+import com.github.geekarist.songs.finder.Song;
 
 public class FinderTest {
 

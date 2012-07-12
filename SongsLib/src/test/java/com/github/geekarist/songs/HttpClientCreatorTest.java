@@ -13,6 +13,8 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Test;
 
+import com.github.geekarist.songs.SongsLibException;
+
 public class HttpClientCreatorTest {
 
 	@Test

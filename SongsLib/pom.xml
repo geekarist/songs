@@ -62,7 +62,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.github.geekarist.songs.Launcher</mainClass>
+					<mainClass>com.github.geekarist.songs.finder.Launcher</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -1,4 +1,4 @@
-package com.github.geekarist.songs;
+package com.github.geekarist.songs.finder;
 
 public class Song {
 

@@ -1,4 +1,4 @@
-package com.github.geekarist.songs;
+package com.github.geekarist.songs.listcreator;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +26,8 @@ import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.github.geekarist.songs.listcreator.PlaylistCreator;
 
 public class PlayListCreatorTest {
 
@@ -110,7 +112,7 @@ public class PlayListCreatorTest {
 			buffer.append("requestMatches(");
 			buffer.append(ObjectUtils.toString(expectedRequest.getURI()) + ", ");
 			buffer.append(ObjectUtils.toString(expectedRequest.getAllHeaders()) + ", ");
-			buffer.append("(...)");
+			buffer.append("[...]");
 			buffer.append(")");
 		}
 

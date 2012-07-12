@@ -1,8 +1,11 @@
-package com.github.geekarist.songs;
+package com.github.geekarist.songs.finder;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
+
+import com.github.geekarist.songs.SongsLibException;
+import com.github.geekarist.songs.finder.Configuration;
 
 public class ConfigurationTest {
 

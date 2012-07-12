@@ -9,6 +9,7 @@ import org.apache.http.auth.NTCredentials;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+
 public class HttpClientCreator {
 
 	private boolean proxyEnabled;
