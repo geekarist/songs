@@ -14,24 +14,26 @@ import com.github.geekarist.songs.http.PrintableHttpPost;
 
 public class ListCreator {
 
+	private static final String API_HOSTNAME = "gdata.youtube.com";
+	private static final String API_KEY = "AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA";
+	private static final String API_URL = "/feeds/api/users/default/playlists?alt=jsonc";
+	
 	private HttpClient httpClient;
 
-	protected ListCreator(HttpClient httpClientMock) {
-		this.httpClient = httpClientMock;
+	protected ListCreator(HttpClient httpClient) {
+		this.httpClient = httpClient;
 	}
 
 	public void create(String title, String description, List<String> tags) throws SongsLibException {
-		String url = "/feeds/api/users/default/playlists?alt=jsonc";
 		try {
-			HttpPost httpPost = new PrintableHttpPost(url);
-			httpPost.addHeader("Host", "gdata.youtube.com");
+			HttpPost httpPost = new PrintableHttpPost(API_URL);
+			httpPost.addHeader("Host", API_HOSTNAME);
 			httpPost.addHeader("Content-Type", "application/json");
 			httpPost.addHeader("Authorization", "AuthSub token=\"AUTHORIZATION_TOKEN\"");
 			httpPost.addHeader("GData-Version", "2");
-			httpPost.addHeader("X-GData-Key",
-					"AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA");
+			httpPost.addHeader("X-GData-Key", API_KEY);
 			httpPost.setEntity(new StringEntity(createRequest(title, description, tags)));
-			httpClient.execute(new HttpHost("gdata.youtube.com"), httpPost);
+			httpClient.execute(new HttpHost(API_HOSTNAME), httpPost);
 		} catch (IOException e) {
 			throw new SongsLibException("Error while reading response of playlist creation service", e);
 		} finally {
