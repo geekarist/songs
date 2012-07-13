@@ -2,6 +2,7 @@ package com.github.geekarist.songs.listcreator;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import junit.framework.Assert;
@@ -17,14 +18,16 @@ import org.apache.http.entity.StringEntity;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
+import com.github.geekarist.songs.SongsLibException;
 import com.github.geekarist.songs.http.PrintableHttpPost;
 import com.github.geekarist.testutils.HttpTestUtils;
 
 public class AuthenticatorTest {
 
 	@Test
-	public void testAuthenticate() throws IOException {
+	public void testAuthenticate() throws IOException, SongsLibException {
 		HttpClient httpClientMock = EasyMock.createMock(HttpClient.class);
+		PrintStream outMock = EasyMock.createMock(PrintStream.class);
 
 		HttpHost deviceCodeTarget = new HttpHost("https://accounts.google.com/o/oauth2/device/code");
 		HttpHost accessTokenTarget = new HttpHost("https://accounts.google.com/o/oauth2/token");
@@ -40,18 +43,25 @@ public class AuthenticatorTest {
 				"src/test/resources/authenticator/accessTokenOkResponse.txt")));
 
 		expectExecute(httpClientMock, deviceCodeTarget, deviceCodeRequest, deviceCodeResponse);
+		expectPrintf(outMock, "Please go to %s in your web browser and enter this code: %s",
+				"http://www.google.com/device", "USER_CODE");
 		expectExecute(httpClientMock, accessTokenTarget, accessTokenRequest, accessTokenPendingResponse);
 		expectExecute(httpClientMock, accessTokenTarget, accessTokenRequest, accessTokenPendingResponse);
 		expectExecute(httpClientMock, accessTokenTarget, accessTokenRequest, accessTokenOkResponse);
 
-		EasyMock.replay(httpClientMock);
+		EasyMock.replay(outMock, httpClientMock);
 
-		Authenticator authenticator = new Authenticator(httpClientMock);
+		Authenticator authenticator = new Authenticator(httpClientMock, outMock);
 		authenticator.authenticate();
 		String token = authenticator.getAccessToken();
 
-		EasyMock.verify(httpClientMock);
+		EasyMock.verify(outMock, httpClientMock);
 		Assert.assertEquals("AUTHORIZATION_TOKEN", token);
+	}
+
+	private void expectPrintf(PrintStream outMock, String format, String... url) {
+		outMock.printf(format, (Object[]) url);
+		EasyMock.expectLastCall().andReturn(outMock);
 	}
 
 	protected HttpPost createExpectedAccessTokenRequest() throws UnsupportedEncodingException {
@@ -60,9 +70,9 @@ public class AuthenticatorTest {
 		accessTokenRequest.addHeader("Content-Type", "application/x-www-form-urlencoded");
 		StringEntity entity = new StringEntity( //
 				"client_id=CLIENT_ID.apps.googleusercontent.com" + //
-				"&client_secret=CLIENT_SECRET" + //
-				"&code=CODE" + //
-				"&grant_type=http://oauth.net/grant_type/device/1.0");
+						"&client_secret=CLIENT_SECRET" + //
+						"&code=CODE" + //
+						"&grant_type=http://oauth.net/grant_type/device/1.0");
 		accessTokenRequest.setEntity(entity);
 		return accessTokenRequest;
 	}

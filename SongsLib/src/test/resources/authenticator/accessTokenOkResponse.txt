@@ -1,5 +1,5 @@
 {
-  "access_token":"1/fFAGRNJru1FTz70BzhT3Zg",
+  "access_token":"AUTHORIZATION_TOKEN",
   "expires_in":3920,
   "token_type":"Bearer",
   "refresh_token":"1/6BMfW9j53gdGImsixUH6kU5RsR4zwI9lUVX-tqf8JXQ"
