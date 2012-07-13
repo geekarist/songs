@@ -17,7 +17,7 @@ public class ListCreator {
 	private static final String API_HOSTNAME = "gdata.youtube.com";
 	private static final String API_KEY = "AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA";
 	private static final String API_URL = "/feeds/api/users/default/playlists?alt=jsonc";
-	
+
 	private HttpClient httpClient;
 
 	protected ListCreator(HttpClient httpClient) {
