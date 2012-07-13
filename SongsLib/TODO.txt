@@ -1,5 +1,4 @@
 TODO:
-Create unit test for song finder launcher
 Implement youtube api authentification
 Update launcher to test playlist creator using a real youtube account
 Implement spring dependancy injection to ease unit testing
@@ -15,3 +14,4 @@ Implement playlist creator for youtube
 Improve list creator unit test error message when http request does not match expected request
 Refactor playlist creator : use constants for youtube api parameters
 Use config file for developer api key
+Create unit test for song finder launcher
