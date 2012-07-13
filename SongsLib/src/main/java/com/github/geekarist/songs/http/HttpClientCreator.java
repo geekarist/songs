@@ -1,4 +1,4 @@
-package com.github.geekarist.songs;
+package com.github.geekarist.songs.http;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,6 +8,8 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import com.github.geekarist.songs.SongsLibException;
 
 
 public class HttpClientCreator {

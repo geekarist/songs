@@ -2,12 +2,11 @@ package com.github.geekarist.songs.listcreator;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -15,13 +14,11 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
@@ -31,6 +28,7 @@ import org.easymock.IArgumentMatcher;
 import org.junit.Test;
 
 import com.github.geekarist.songs.SongsLibException;
+import com.github.geekarist.songs.http.PrintableHttpPost;
 
 public class ListCreatorTest {
 
@@ -68,7 +66,7 @@ public class ListCreatorTest {
 	}
 
 	protected HttpPost createHttpRequest(String requestContents) throws IOException {
-		HttpPost httpPost = new HttpPost("/feeds/api/users/default/playlists?alt=jsonc");
+		HttpPost httpPost = new PrintableHttpPost("/feeds/api/users/default/playlists?alt=jsonc");
 		httpPost.addHeader("Host", "gdata.youtube.com");
 		httpPost.addHeader("Content-Type", "application/json");
 		httpPost.addHeader("Authorization", "AuthSub token=\"AUTHORIZATION_TOKEN\"");
@@ -128,29 +126,16 @@ public class ListCreatorTest {
 
 		@Override
 		public void appendTo(StringBuffer buffer) {
-			buffer.append("requestMatches(");
-			buffer.append(ObjectUtils.toString(expectedRequest.getURI()) + ", ");
-			buffer.append(ReflectionToStringBuilder.toString(expectedRequest.getAllHeaders(),
-					ToStringStyle.SHORT_PREFIX_STYLE) + ", ");
-			try {
-				buffer.append(EntityUtils.toString(expectedRequest.getEntity()));
-			} catch (ParseException e) {
-				buffer.append("[ParseException when getting entity]");
-			} catch (IOException e) {
-				buffer.append("[IOException when getting entity]");
-			}
-			buffer.append(")");
+			buffer.append(ObjectUtils.toString(expectedRequest));
 		}
 
 	}
 
-	protected HttpResponse createHttpResponse(String responseContents) {
+	protected HttpResponse createHttpResponse(String responseContents) throws UnsupportedEncodingException {
 		HttpResponse response = new BasicHttpResponse( //
 				new BasicStatusLine( //
 						new ProtocolVersion("HTTP", 1, 1), 201, "OK"));
-		BasicHttpEntity entity = new BasicHttpEntity();
-		entity.setContent(new ReaderInputStream(new StringReader(responseContents)));
-		response.setEntity(entity);
+		response.setEntity(new StringEntity(responseContents));
 		return response;
 	}
 }

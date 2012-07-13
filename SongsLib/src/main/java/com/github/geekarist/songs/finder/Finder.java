@@ -12,9 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.github.geekarist.songs.HttpClientCreator;
 import com.github.geekarist.songs.Song;
 import com.github.geekarist.songs.SongsLibException;
+import com.github.geekarist.songs.http.HttpClientCreator;
 
 public class Finder {
 

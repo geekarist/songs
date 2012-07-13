@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
 import com.github.geekarist.songs.SongsLibException;
+import com.github.geekarist.songs.http.PrintableHttpPost;
 
 public class ListCreator {
 
@@ -22,7 +23,7 @@ public class ListCreator {
 	public void create(String title, String description, List<String> tags) throws SongsLibException {
 		String url = "/feeds/api/users/default/playlists?alt=jsonc";
 		try {
-			HttpPost httpPost = new HttpPost(url);
+			HttpPost httpPost = new PrintableHttpPost(url);
 			httpPost.addHeader("Host", "gdata.youtube.com");
 			httpPost.addHeader("Content-Type", "application/json");
 			httpPost.addHeader("Authorization", "AuthSub token=\"AUTHORIZATION_TOKEN\"");
