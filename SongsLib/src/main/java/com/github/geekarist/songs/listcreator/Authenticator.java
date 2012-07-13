@@ -47,7 +47,7 @@ public class Authenticator {
 		this.authorizationToken = obtainToken;
 	}
 
-	protected String obtainToken(HttpPost request) throws SongsLibException {
+	private String obtainToken(HttpPost request) throws SongsLibException {
 		int retryCount = 0;
 		String tokenError;
 		String tokenResponseBody;
@@ -61,7 +61,7 @@ public class Authenticator {
 				throw new SongsLibException("Error while waiting between token requests", e);
 			}
 		} while ("authorization_pending".equals(tokenError) && retryCount < 10);
-		
+
 		return readJsonAttrValue(tokenResponseBody, "access_token");
 	}
 
@@ -74,7 +74,7 @@ public class Authenticator {
 				deviceCode);
 	}
 
-	protected String fetchDeviceCode() throws SongsLibException {
+	private String fetchDeviceCode() throws SongsLibException {
 		HttpPost request = new PrintableHttpPost("/o/oauth2/device/code");
 		addCommonHeaders(request);
 		StringEntity entity = createEntity(createDeviceCodeRequestContents());
@@ -87,7 +87,7 @@ public class Authenticator {
 		return readJsonAttrValue(deviceCodeResponseBody, "device_code");
 	}
 
-	protected StringEntity createEntity(String createDeviceCodeRequestContents) throws SongsLibException {
+	private StringEntity createEntity(String createDeviceCodeRequestContents) throws SongsLibException {
 		StringEntity entity;
 		try {
 			entity = new StringEntity(createDeviceCodeRequestContents);
@@ -97,7 +97,7 @@ public class Authenticator {
 		return entity;
 	}
 
-	protected String readJsonAttrValue(String deviceCodeResponseBody, String jsonAttrName) throws SongsLibException {
+	private String readJsonAttrValue(String deviceCodeResponseBody, String jsonAttrName) throws SongsLibException {
 		String deviceCode;
 		try {
 			JSONObject jsonDeviceCodeResponse = new JSONObject(deviceCodeResponseBody);
@@ -112,7 +112,7 @@ public class Authenticator {
 		return deviceCode;
 	}
 
-	protected String responseBodyToString(HttpEntity entity) throws SongsLibException {
+	private String responseBodyToString(HttpEntity entity) throws SongsLibException {
 		String deviceCodeResponseBody;
 		try {
 			deviceCodeResponseBody = EntityUtils.toString(entity);
@@ -124,7 +124,7 @@ public class Authenticator {
 		return deviceCodeResponseBody;
 	}
 
-	protected HttpResponse execute(HttpPost request, String uri) throws SongsLibException {
+	private HttpResponse execute(HttpPost request, String uri) throws SongsLibException {
 		HttpResponse deviceCodeResponse;
 		try {
 			deviceCodeResponse = httpClient.execute(new HttpHost(uri), request);
@@ -136,11 +136,11 @@ public class Authenticator {
 		return deviceCodeResponse;
 	}
 
-	protected String createDeviceCodeRequestContents() {
+	private String createDeviceCodeRequestContents() {
 		return "client_id=CLIENT_ID.apps.googleusercontent.com&scope=https://gdata.youtube.com";
 	}
 
-	protected void addCommonHeaders(HttpPost request) {
+	private void addCommonHeaders(HttpPost request) {
 		request.addHeader("Host", "accounts.google.com");
 		request.addHeader("Content-Type", "application/x-www-form-urlencoded");
 	}
