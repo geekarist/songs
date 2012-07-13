@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.github.geekarist.songs.Configuration;
 import com.github.geekarist.songs.Song;
 import com.github.geekarist.songs.SongsLibException;
 import com.github.geekarist.songs.http.HttpClientCreator;

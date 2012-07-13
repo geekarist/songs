@@ -1,11 +1,10 @@
-package com.github.geekarist.songs.finder;
+package com.github.geekarist.songs;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.github.geekarist.songs.SongsLibException;
 
 public class Configuration {
 
@@ -18,6 +17,7 @@ public class Configuration {
 	private String echoNestUrl = "";
 	private String echoNestApiKey = "";
 	private String proxyDomain = "";
+	private String listApiKey = "";
 
 	public Configuration(String path) throws SongsLibException {
 		Properties properties = new Properties();
@@ -38,6 +38,7 @@ public class Configuration {
 		proxyUrl = properties.getProperty("proxy.url");
 		echoNestUrl = properties.getProperty("echonest.url");
 		echoNestApiKey = properties.getProperty("echonest.api.key");
+		listApiKey = properties.getProperty("list.api.key");
 	}
 
 	public Configuration() {
@@ -73,6 +74,10 @@ public class Configuration {
 
 	public String getProxyDomain() {
 		return proxyDomain;
+	}
+
+	public String getListApiKey() {
+		return listApiKey;
 	}
 
 }

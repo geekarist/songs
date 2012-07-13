@@ -1,18 +1,15 @@
-package com.github.geekarist.songs.finder;
+package com.github.geekarist.songs;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
-
-import com.github.geekarist.songs.SongsLibException;
-import com.github.geekarist.songs.finder.Configuration;
 
 public class ConfigurationTest {
 
 	@Test
 	public void test() throws SongsLibException {
 		Configuration configuration = new Configuration(
-				"src/test/resources/songfinder/testsongfinder.properties");
+				"src/test/resources/testsongs.properties");
 
 		Assert.assertEquals(true, configuration.isProxyEnabled());
 		Assert.assertEquals("username", configuration.getProxyUser());
@@ -22,6 +19,8 @@ public class ConfigurationTest {
 		Assert.assertEquals("proxy.host.com", configuration.getProxyUrl());
 		Assert.assertEquals("http://url.to.api/xx/yy/zz", configuration.getEchoNestUrl());
 		Assert.assertEquals("FQDKK41945DJ4JF0", configuration.getEchoNestApiKey());
+		
+		Assert.assertEquals("LKJSDQFQSKDJFQSLJF", configuration.getListApiKey());
 	}
 
 }

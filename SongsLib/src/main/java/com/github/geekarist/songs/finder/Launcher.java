@@ -3,6 +3,7 @@ package com.github.geekarist.songs.finder;
 import java.util.List;
 import java.util.Scanner;
 
+import com.github.geekarist.songs.Configuration;
 import com.github.geekarist.songs.Song;
 import com.github.geekarist.songs.SongsLibException;
 
@@ -17,7 +18,7 @@ public class Launcher {
 		System.out.print("Enter number of results: ");
 		int nbResults = scanner.nextInt();
 		
-		Finder finder = new Finder(new Configuration("src/main/resources/songfinder.properties"));
+		Finder finder = new Finder(new Configuration("src/main/resources/songs.properties"));
 		finder.chooseBpm(bpm);
 		finder.chooseNbResults(nbResults);
 		finder.chooseStyle(style);
