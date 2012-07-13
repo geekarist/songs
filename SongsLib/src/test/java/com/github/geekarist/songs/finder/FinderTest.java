@@ -17,10 +17,9 @@ import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
+import com.github.geekarist.songs.Configuration;
 import com.github.geekarist.songs.Song;
 import com.github.geekarist.songs.SongsLibException;
-import com.github.geekarist.songs.finder.Configuration;
-import com.github.geekarist.songs.finder.Finder;
 import com.github.geekarist.songs.http.HttpClientCreator;
 
 public class FinderTest {

@@ -27,6 +27,7 @@ import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.junit.Test;
 
+import com.github.geekarist.songs.Configuration;
 import com.github.geekarist.songs.SongsLibException;
 import com.github.geekarist.songs.http.PrintableHttpPost;
 
@@ -47,12 +48,20 @@ public class ListCreatorTest {
 		expectGetConnectionManager(httpClientMock, connectionManagerMock);
 		expectShutdown(connectionManagerMock);
 
-		EasyMock.replay(httpClientMock, connectionManagerMock);
-		
-		ListCreator creator = new ListCreator(httpClientMock);
+		Configuration configurationMock = EasyMock.createMock(Configuration.class);
+		expectGetListApiKey(configurationMock, "API_KEY");
+
+		EasyMock.replay(httpClientMock, connectionManagerMock, configurationMock);
+
+		ListCreator creator = new ListCreator(httpClientMock, configurationMock);
 		creator.create("List Title", "List Description", Arrays.asList("tag1", "tag2"));
 
-		EasyMock.verify(httpClientMock, connectionManagerMock);
+		EasyMock.verify(httpClientMock, connectionManagerMock, configurationMock);
+	}
+
+	private void expectGetListApiKey(Configuration configurationMock, String apiKey) {
+		configurationMock.getListApiKey();
+		EasyMock.expectLastCall().andReturn(apiKey);
 	}
 
 	private void expectShutdown(ClientConnectionManager connectionManagerMock) {
@@ -71,8 +80,7 @@ public class ListCreatorTest {
 		httpPost.addHeader("Content-Type", "application/json");
 		httpPost.addHeader("Authorization", "AuthSub token=\"AUTHORIZATION_TOKEN\"");
 		httpPost.addHeader("GData-Version", "2");
-		httpPost.addHeader("X-GData-Key",
-				"AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA");
+		httpPost.addHeader("X-GData-Key", "API_KEY");
 		HttpEntity entity = new StringEntity(requestContents);
 		httpPost.setEntity(entity);
 		return httpPost;
