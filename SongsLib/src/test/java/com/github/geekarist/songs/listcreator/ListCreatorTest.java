@@ -12,14 +12,17 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.util.EntityUtils;
@@ -29,7 +32,7 @@ import org.junit.Test;
 
 import com.github.geekarist.songs.SongsLibException;
 
-public class PlayListCreatorTest {
+public class ListCreatorTest {
 
 	@Test
 	public void testCreate() throws ClientProtocolException, IOException, SongsLibException {
@@ -38,17 +41,17 @@ public class PlayListCreatorTest {
 
 		HttpHost expectedTarget = new HttpHost("gdata.youtube.com");
 		HttpPost expectedRequest = createHttpRequest(FileUtils.readFileToString(new File(
-				"src/test/resources/youtubeplaylistcreator/createPlayListRequestEntity.txt")));
+				"src/test/resources/listcreator/createPlayListRequestEntity.txt")));
 		HttpResponse response = createHttpResponse(FileUtils.readFileToString(new File(
-				"src/test/resources/youtubeplaylistcreator/createPlayListResponse.txt")));
+				"src/test/resources/listcreator/createPlayListResponse.txt")));
 
 		expectExecute(httpClientMock, expectedTarget, expectedRequest, response);
 		expectGetConnectionManager(httpClientMock, connectionManagerMock);
 		expectShutdown(connectionManagerMock);
 
 		EasyMock.replay(httpClientMock, connectionManagerMock);
-
-		PlaylistCreator creator = new PlaylistCreator(httpClientMock);
+		
+		ListCreator creator = new ListCreator(httpClientMock);
 		creator.create("List Title", "List Description", Arrays.asList("tag1", "tag2"));
 
 		EasyMock.verify(httpClientMock, connectionManagerMock);
@@ -70,9 +73,9 @@ public class PlayListCreatorTest {
 		httpPost.addHeader("Content-Type", "application/json");
 		httpPost.addHeader("Authorization", "AuthSub token=\"AUTHORIZATION_TOKEN\"");
 		httpPost.addHeader("GData-Version", "2");
-		httpPost.addHeader("X-GData-Key", "AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA");
-		BasicHttpEntity entity = new BasicHttpEntity();
-		entity.setContent(new ReaderInputStream(new StringReader(requestContents)));
+		httpPost.addHeader("X-GData-Key",
+				"AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA");
+		HttpEntity entity = new StringEntity(requestContents);
 		httpPost.setEntity(entity);
 		return httpPost;
 	}
@@ -127,8 +130,15 @@ public class PlayListCreatorTest {
 		public void appendTo(StringBuffer buffer) {
 			buffer.append("requestMatches(");
 			buffer.append(ObjectUtils.toString(expectedRequest.getURI()) + ", ");
-			buffer.append(ObjectUtils.toString(expectedRequest.getAllHeaders()) + ", ");
-			buffer.append("[...]");
+			buffer.append(ReflectionToStringBuilder.toString(expectedRequest.getAllHeaders(),
+					ToStringStyle.SHORT_PREFIX_STYLE) + ", ");
+			try {
+				buffer.append(EntityUtils.toString(expectedRequest.getEntity()));
+			} catch (ParseException e) {
+				buffer.append("[ParseException when getting entity]");
+			} catch (IOException e) {
+				buffer.append("[IOException when getting entity]");
+			}
 			buffer.append(")");
 		}
 

@@ -11,11 +11,11 @@ import org.apache.http.entity.StringEntity;
 
 import com.github.geekarist.songs.SongsLibException;
 
-public class PlaylistCreator {
+public class ListCreator {
 
 	private HttpClient httpClient;
 
-	protected PlaylistCreator(HttpClient httpClientMock) {
+	protected ListCreator(HttpClient httpClientMock) {
 		this.httpClient = httpClientMock;
 	}
 
@@ -29,7 +29,7 @@ public class PlaylistCreator {
 			httpPost.addHeader("GData-Version", "2");
 			httpPost.addHeader("X-GData-Key",
 					"AI39si4uPDnNHnZyEjzPz8rrHCJQ1s9Vy-cLhcaqgVYU6dr3SzUfi-TxOyHM0RZ6OeyNsuGI55TknpisiKRBHWlcczy3LNTvaA");
-			httpPost.setEntity(new StringEntity(createRequestEntity(title, description, tags)));
+			httpPost.setEntity(new StringEntity(createRequest(title, description, tags)));
 			httpClient.execute(new HttpHost("gdata.youtube.com"), httpPost);
 		} catch (IOException e) {
 			throw new SongsLibException("Error while reading response of playlist creation service", e);
@@ -39,7 +39,7 @@ public class PlaylistCreator {
 
 	}
 
-	protected String createRequestEntity(String title, String description, List<String> tags) {
+	protected String createRequest(String title, String description, List<String> tags) {
 		return String.format(
 				"{ \"data\":{ \"title\":\"%s\", \"description\":\"%s\", \"tags\":[%s], \"privacy\":\"private\" } }",
 				title, description, tagsToStr(tags));
