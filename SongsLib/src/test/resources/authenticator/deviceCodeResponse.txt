@@ -3,5 +3,5 @@
   "user_code" : "USER_CODE",
   "verification_url" : "http://www.google.com/device",
   "expires_in" : "1800",
-  "interval" : 5,
+  "interval" : 7,
 }

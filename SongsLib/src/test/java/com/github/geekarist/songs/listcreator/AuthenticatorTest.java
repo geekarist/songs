@@ -18,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
+import com.github.geekarist.songs.Sleeper;
 import com.github.geekarist.songs.SongsLibException;
 import com.github.geekarist.songs.http.PrintableHttpPost;
 import com.github.geekarist.testutils.HttpTestUtils;
@@ -25,9 +26,10 @@ import com.github.geekarist.testutils.HttpTestUtils;
 public class AuthenticatorTest {
 
 	@Test
-	public void testAuthenticate() throws IOException, SongsLibException {
+	public void testAuthenticate() throws IOException, SongsLibException, InterruptedException {
 		HttpClient httpClientMock = EasyMock.createMock(HttpClient.class);
 		PrintStream outMock = EasyMock.createMock(PrintStream.class);
+		Sleeper sleeperMock = EasyMock.createMock(Sleeper.class);
 
 		HttpHost deviceCodeTarget = new HttpHost("https://accounts.google.com/o/oauth2/device/code");
 		HttpHost accessTokenTarget = new HttpHost("https://accounts.google.com/o/oauth2/token");
@@ -46,17 +48,24 @@ public class AuthenticatorTest {
 		expectPrintf(outMock, "Please go to %s in your web browser and enter this code: %s",
 				"http://www.google.com/device", "USER_CODE");
 		expectExecute(httpClientMock, accessTokenTarget, accessTokenRequest, accessTokenPendingResponse);
+		expectSleep(sleeperMock, 7000);
 		expectExecute(httpClientMock, accessTokenTarget, accessTokenRequest, accessTokenPendingResponse);
+		expectSleep(sleeperMock, 7000);
 		expectExecute(httpClientMock, accessTokenTarget, accessTokenRequest, accessTokenOkResponse);
 
-		EasyMock.replay(outMock, httpClientMock);
+		EasyMock.replay(outMock, httpClientMock, sleeperMock);
 
-		Authenticator authenticator = new Authenticator(httpClientMock, outMock);
+		Authenticator authenticator = new Authenticator(httpClientMock, outMock, sleeperMock);
 		authenticator.authenticate();
 		String token = authenticator.getAccessToken();
 
-		EasyMock.verify(outMock, httpClientMock);
+		EasyMock.verify(outMock, httpClientMock, sleeperMock);
 		Assert.assertEquals("AUTHORIZATION_TOKEN", token);
+	}
+
+	private void expectSleep(Sleeper sleeperMock, int millis) throws InterruptedException {
+		sleeperMock.sleep(millis);
+		EasyMock.expectLastCall();
 	}
 
 	private void expectPrintf(PrintStream outMock, String format, String... url) {
