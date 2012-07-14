@@ -21,6 +21,19 @@ import com.github.geekarist.songs.http.PrintableHttpPost;
 
 public class Authenticator {
 
+	private static final String DEVICECODE_URL = "https://accounts.google.com/o/oauth2/device/code";
+	private static final String DEVICECODE_POST_URI = "/o/oauth2/device/code";
+	private static final String ATTR_USER_CODE = "user_code";
+	private static final String ATTR_VERIFICATION_URL = "verification_url";
+	private static final String ATTR_DEVICE_CODE = "device_code";
+	
+	private static final String TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
+	private static final String TOKEN_POST_URI = "/o/oauth2/token";
+	private static final String ATTR_ERROR = "error";
+	private static final String ATTR_ACCESS_TOKEN = "access_token";
+	private static final String VALUE_AUTHORIZATION_PENDING = "authorization_pending";
+	private static final int MAX_TOKEN_RETRY = 10;
+	
 	private HttpClient httpClient;
 	private PrintStream out;
 	private String authorizationToken;
@@ -32,37 +45,37 @@ public class Authenticator {
 
 	public void authenticate() throws SongsLibException {
 		String deviceCode = fetchDeviceCode();
-		waitForAuthorization(deviceCode);
-	}
-
-	private void waitForAuthorization(String deviceCode) throws SongsLibException {
-		HttpPost request = new PrintableHttpPost("/o/oauth2/token");
+		
+		HttpPost request = new PrintableHttpPost(TOKEN_POST_URI);
 		addCommonHeaders(request);
-		StringEntity entity = createEntity(createTokenRequestContents(deviceCode));
-		request.setEntity(entity);
-		setAuthorizationToken(obtainToken(request));
+		String tokenRequestContents = createTokenRequestContents(deviceCode);
+		StringEntity tokenRequestEntity = createEntity(tokenRequestContents);
+		request.setEntity(tokenRequestEntity);
+		
+		String token = fetchToken(request);
+		setAuthorizationToken(token);
 	}
 
-	private void setAuthorizationToken(String obtainToken) {
-		this.authorizationToken = obtainToken;
+	private void setAuthorizationToken(String token) {
+		this.authorizationToken = token;
 	}
 
-	private String obtainToken(HttpPost request) throws SongsLibException {
+	private String fetchToken(HttpPost request) throws SongsLibException {
 		int retryCount = 0;
 		String tokenError;
 		String tokenResponseBody;
 		do {
-			HttpResponse tokenResponse = execute(request, "https://accounts.google.com/o/oauth2/token");
+			HttpResponse tokenResponse = execute(request, TOKEN_URL);
 			tokenResponseBody = responseBodyToString(tokenResponse.getEntity());
-			tokenError = readJsonAttrValue(tokenResponseBody, "error");
+			tokenError = readJsonAttrValue(tokenResponseBody, ATTR_ERROR);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				throw new SongsLibException("Error while waiting between token requests", e);
 			}
-		} while ("authorization_pending".equals(tokenError) && retryCount < 10);
+		} while (VALUE_AUTHORIZATION_PENDING.equals(tokenError) && retryCount < MAX_TOKEN_RETRY);
 
-		return readJsonAttrValue(tokenResponseBody, "access_token");
+		return readJsonAttrValue(tokenResponseBody, ATTR_ACCESS_TOKEN);
 	}
 
 	private String createTokenRequestContents(String deviceCode) {
@@ -75,16 +88,16 @@ public class Authenticator {
 	}
 
 	private String fetchDeviceCode() throws SongsLibException {
-		HttpPost request = new PrintableHttpPost("/o/oauth2/device/code");
+		HttpPost request = new PrintableHttpPost(DEVICECODE_POST_URI);
 		addCommonHeaders(request);
 		StringEntity entity = createEntity(createDeviceCodeRequestContents());
 		request.setEntity(entity);
-		HttpResponse deviceCodeResponse = execute(request, "https://accounts.google.com/o/oauth2/device/code");
+		HttpResponse deviceCodeResponse = execute(request, DEVICECODE_URL);
 		String deviceCodeResponseBody = responseBodyToString(deviceCodeResponse.getEntity());
-		String verificationUrl = readJsonAttrValue(deviceCodeResponseBody, "verification_url");
-		String userCode = readJsonAttrValue(deviceCodeResponseBody, "user_code");
+		String verificationUrl = readJsonAttrValue(deviceCodeResponseBody, ATTR_VERIFICATION_URL);
+		String userCode = readJsonAttrValue(deviceCodeResponseBody, ATTR_USER_CODE);
 		out.printf("Please go to %s in your web browser and enter this code: %s", verificationUrl, userCode);
-		return readJsonAttrValue(deviceCodeResponseBody, "device_code");
+		return readJsonAttrValue(deviceCodeResponseBody, ATTR_DEVICE_CODE);
 	}
 
 	private StringEntity createEntity(String createDeviceCodeRequestContents) throws SongsLibException {
@@ -117,9 +130,9 @@ public class Authenticator {
 		try {
 			deviceCodeResponseBody = EntityUtils.toString(entity);
 		} catch (ParseException e) {
-			throw new SongsLibException("Error while reading device code response body", e);
+			throw new SongsLibException("Error while reading http response body", e);
 		} catch (IOException e) {
-			throw new SongsLibException("Error while reading device code response body", e);
+			throw new SongsLibException("Error while reading http response body", e);
 		}
 		return deviceCodeResponseBody;
 	}
@@ -129,9 +142,9 @@ public class Authenticator {
 		try {
 			deviceCodeResponse = httpClient.execute(new HttpHost(uri), request);
 		} catch (ClientProtocolException e) {
-			throw new SongsLibException("Error while executing device code request", e);
+			throw new SongsLibException("Error while executing http request", e);
 		} catch (IOException e) {
-			throw new SongsLibException("Error while executing device code request", e);
+			throw new SongsLibException("Error while executing http request", e);
 		}
 		return deviceCodeResponse;
 	}
