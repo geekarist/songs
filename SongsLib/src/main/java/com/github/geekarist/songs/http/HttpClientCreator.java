@@ -11,7 +11,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.github.geekarist.songs.SongsLibException;
 
-
 public class HttpClientCreator {
 
 	private boolean proxyEnabled;
@@ -21,7 +20,8 @@ public class HttpClientCreator {
 	private int proxyPort;
 	private String proxyDomain;
 
-	public HttpClientCreator(boolean proxyEnabled, String proxyUser, String proxyPass, String proxyDomain, String proxyUrl, int proxyPort) {
+	public HttpClientCreator(boolean proxyEnabled, String proxyUser, String proxyPass, String proxyDomain,
+			String proxyUrl, int proxyPort) {
 		this.proxyEnabled = proxyEnabled;
 		this.proxyUser = proxyUser;
 		this.proxyPass = proxyPass;
@@ -40,7 +40,6 @@ public class HttpClientCreator {
 
 	private void configureClientForProxy(DefaultHttpClient httpClient) throws SongsLibException {
 		String localHostName = getLocalHostName();
-
 		HttpHost proxyHost = new HttpHost(proxyUrl, proxyPort);
 		httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
 

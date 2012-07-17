@@ -1,3 +1,1 @@
-As a SongsWeb user, 
-I want to search a song by artist and title,
-So that I can view a list of results  
+*As a* SongsWeb user, *I want to* search a song by artist and title, *So that* I can view a list of results  
