@@ -1,6 +1,7 @@
 TODO:
-Auto detect proxy settings: http://stackoverflow.com/q/4933677
+Update launcher to authenticate with a real youtube account
 Update launcher to test playlist creator using a real youtube account
+Auto detect proxy settings: http://stackoverflow.com/q/4933677
 Implement spring dependancy injection to ease unit testing
 Improve log4j pattern
 
