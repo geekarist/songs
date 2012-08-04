@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.easymock.EasyMock;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.geekarist.songs.Song;
@@ -13,6 +14,7 @@ import com.github.geekarist.songs.finder.Launcher.MyScanner;
 public class LauncherTest {
 
 	@Test
+	@Ignore
 	public void testLaunch() throws IOException, SongsLibException {
 		MyScanner scanner = EasyMock.createMock(MyScanner.class);
 		PrintStream out = EasyMock.createMock(PrintStream.class);
